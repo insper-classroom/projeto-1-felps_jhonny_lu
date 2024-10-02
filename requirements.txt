@@ -1,0 +1,4 @@
+matplotlib
+aigyminsper
+DSSE[coverage]
+pandas
