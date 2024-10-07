@@ -48,4 +48,4 @@ while env.agents:
     #print(info)
 
 df = pd.DataFrame(infos_list)
-df.to_csv('../results/data_drone_1_config_1.csv', index=False)
+df.to_csv('results/traditional_search_1_agent_1c.csv', index=False)
