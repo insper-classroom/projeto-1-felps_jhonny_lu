@@ -9,13 +9,13 @@ env = CoverageDroneSwarmSearch(
 )
 
 opt = {
-    "drones_positions": [(20, 20)],
+    "drones_positions": [(18, 15)],
 }
 
 def random_policy(obs, agents):
     actions = {}
     for agent in agents:
-        actions[agent] = env.action_space(agent).sample()
+        actions[agent] = 1
     return actions
 
 observations, info = env.reset(options=opt)

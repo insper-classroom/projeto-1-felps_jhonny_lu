@@ -157,3 +157,4 @@ xarray==2024.9.0
 xhistogram==0.3.2
 yarl==1.13.1
 zarr==2.18.3
+rsutils
