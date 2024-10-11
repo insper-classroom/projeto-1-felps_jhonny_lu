@@ -102,7 +102,7 @@ def AStar_single_agent(current_pos, next_pos):
     return 8  # Não fazer nada
 
 
-visited = {(23, 23)}  # Posição inicial já visitada
+visited = {starting_position}  # Posição inicial já visitada
 current_position = starting_position
 drone_state = DroneState(starting_position, prob_matrix, visited)
 
