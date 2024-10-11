@@ -4,18 +4,17 @@ import pandas as pd
 import numpy as np
 
 
-prob_matrix = np.load("data/config_01.npy" )
+prob_matrix = np.load("data/config_02.npy" )
 
 # Inicializar o ambiente DSSE
 env = CoverageDroneSwarmSearch(
     drone_amount=1,
     render_mode="human",
     timestep_limit=200,
-    prob_matrix_path="data/config_01.npy" 
+    prob_matrix_path="data/config_02.npy" 
 )
 
-starting_position = (23, 23)
-
+starting_position = (32, 32)
 opt = {
     "drones_positions": [starting_position],
 }
@@ -150,10 +149,9 @@ while step < step_limit:
     info['step'] = step
     infos_list.append(info)
 
-
 # Fechar o ambiente DSSE após a execução
 env.close()
 
 # Salvar os resultados em um arquivo CSV
 df = pd.DataFrame(infos_list)
-df.to_csv('results/AStar_search_1_agent_1c.csv', index=False)
+df.to_csv('results/AStar_search_1_agent_2c.csv', index=False)
