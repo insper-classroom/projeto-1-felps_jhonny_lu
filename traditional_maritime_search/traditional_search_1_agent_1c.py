@@ -20,12 +20,12 @@ def traditional_search_single_agent(obs, agents, opt):
     for agent in agents:
     
         if (obs[agent][0][1] - start_position[1]) % 2 == 0:
-            if obs[agent][0][0] == len(obs[agent][1][0]) - start_position[1] -1:
+            if obs[agent][0][0] == len(obs[agent][1][0]) - start_position[0] -1:
                 actions[agent] = 3
             else:
                 actions[agent] = 1
         elif (obs[agent][0][1] - start_position[1]) % 2 != 0:
-            if obs[agent][0][0] == start_position[1] +1:
+            if obs[agent][0][0] == start_position[0] +1:
                 actions[agent] = 3
             else:
                 actions[agent] = 0
