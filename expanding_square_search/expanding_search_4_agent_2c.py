@@ -9,7 +9,7 @@ env = CoverageDroneSwarmSearch(
 )
 
 opt = {
-    "drones_positions": [(25, 32), (40, 32), (32, 18), (32, 47)],
+    "drones_positions": [(25, 32), (40, 32), (32, 18), (32, 46)],
 }
 
 def expanding_search_4_agent(direcao1, direcao2, direcao3, direcao4, agents):
@@ -36,23 +36,23 @@ def expanding_search_4_agent(direcao1, direcao2, direcao3, direcao4, agents):
             elif direcao2 == "esquerda":
                 actions[agent] = 0
         elif agent == "drone2":
-            if direcao2 == "cima":
+            if direcao3 == "cima":
                 actions[agent] = 2
-            elif direcao2 == "direita":
+            elif direcao3 == "direita":
                 actions[agent] = 1
-            elif direcao2 == "baixo":
+            elif direcao3 == "baixo":
                 actions[agent] = 3
-            elif direcao2 == "esquerda":
+            elif direcao3 == "esquerda":
                 actions[agent] = 0
         elif agent == "drone3":
-            if direcao2 == "cima":
+            if direcao4 == "cima":
                 actions[agent] = 2
-            elif direcao2 == "direita":
+            elif direcao4 == "direita":
                 actions[agent] = 1
-            elif direcao2 == "baixo":
+            elif direcao4 == "baixo":
                 actions[agent] = 3
-            elif direcao2 == "esquerda":
-                actions[agent] = 0
+            elif direcao4 == "esquerda":
+                actions[agent] = 00
 
     return actions
 
@@ -62,8 +62,8 @@ step = 0
 infos_list = []
 direcoes1 = ["direita", "baixo", "esquerda", "cima"]
 direcoes2 = ["esquerda", "cima", "direita", "baixo"]
-direcoes3 = ["baixo", "esquerda", "cima", "direita"]
-direcoes4 = ["cima", "direita", "baixo", "esquerdo"]
+direcoes3 = ["cima", "direita", "baixo", "esquerda"]
+direcoes4 = ["baixo", "esquerda", "cima", "direita"]
 passos_inciais = 1
 passos = 1
 contador = 1

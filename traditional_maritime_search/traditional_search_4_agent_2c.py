@@ -80,7 +80,7 @@ passos = 13
 
 while env.agents:
     if passos < 0:
-        passos = 13
+        passos = 12
     
     step += 1
     actions = traditional_search_single_agent(observations, env.agents, opt, passos)
