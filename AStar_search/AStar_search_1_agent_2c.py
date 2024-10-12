@@ -3,10 +3,8 @@ from aigyminsper.search.Graph import State
 import pandas as pd
 import numpy as np
 
-
 prob_matrix = np.load("data/config_02.npy" )
 
-# Inicializar o ambiente DSSE
 env = CoverageDroneSwarmSearch(
     drone_amount=1,
     render_mode="human",
@@ -15,13 +13,14 @@ env = CoverageDroneSwarmSearch(
 )
 
 starting_position = (32, 32)
+
 opt = {
     "drones_positions": [starting_position],
 }
 
 observations, info = env.reset(options=opt)
 
-# Classe DroneState com controle de sucessores
+
 class DroneState(State):
     def __init__(self, position, prob_matrix, visited):
         self.position = position
@@ -46,21 +45,20 @@ class DroneState(State):
         x, y = self.position
         prob_value = self.prob_matrix[x, y]
         
-        # Calculate Manhattan distance to the nearest high-probability cell
         high_prob_indices = np.argwhere(self.prob_matrix > 0)
         total_high_prob = high_prob_indices.shape[0]
         
         if total_high_prob == 0:
-            return float('inf')  # No high-probability cells left
+            return float('inf')
         
         distances = np.abs(high_prob_indices[:, 0] - x) + np.abs(high_prob_indices[:, 1] - y)
         min_distance = np.min(distances)
         
-        # Normalize probability and distance
+       
         normalized_prob = prob_value / np.max(self.prob_matrix) if np.max(self.prob_matrix) > 0 else 0
         normalized_distance = min_distance / (len(self.prob_matrix) + len(self.prob_matrix[0]))
         
-        # Heuristic: prioritize high probability and proximity
+    
         revisit_penalty = revisit_penalty_value if (x, y) in self.visited else 0
         heuristic_value = -(normalized_prob * prob_weight) + (normalized_distance * distance_weight) + revisit_penalty
         
@@ -68,7 +66,7 @@ class DroneState(State):
 
 
     def cost(self):
-        return 1  # Maintain a consistent cost for each move
+        return 1
     
     def description(self):
         return f"Drone na posição {self.position}"
@@ -80,66 +78,61 @@ class DroneState(State):
         return False
 
 
-def AStar_single_agent(current_pos, next_pos):
-    dx, dy = next_pos[0] - current_pos[0], next_pos[1] - current_pos[1]
-    if dx == 1 and dy == 0:
-        return 1  # Direita
-    elif dx == -1 and dy == 0:
-        return 0  # Esquerda
-    elif dx == 0 and dy == 1:
-        return 3  # Baixo
-    elif dx == 0 and dy == -1:
-        return 2  # Cima
-    elif dx == 1 and dy == 1:
-        return 7  # Diagonal direita para baixo
-    elif dx == -1 and dy == 1:
-        return 6  # Diagonal esquerda para baixo
-    elif dx == 1 and dy == -1:
-        return 5  # Diagonal direita para cima
-    elif dx == -1 and dy == -1:
-        return 4  # Diagonal esquerda para cima
-    return 8  # Não fazer nada
+def AStar_single_agent(current_pos, next_pos, agents):
+    actions = {}
+
+    for agent in agents:
+        dx, dy = next_pos[0] - current_pos[0], next_pos[1] - current_pos[1]
+        if dx == 1 and dy == 0:
+            actions[agent] = 1
+        elif dx == -1 and dy == 0:
+            actions[agent] = 0 
+        elif dx == 0 and dy == 1:
+            actions[agent] = 3 
+        elif dx == 0 and dy == -1:
+            actions[agent] = 2 
+        elif dx == 1 and dy == 1:
+            actions[agent] = 7
+        elif dx == -1 and dy == 1:
+            actions[agent] = 6 
+        elif dx == 1 and dy == -1:
+            actions[agent] = 5 
+        elif dx == -1 and dy == -1:
+            actions[agent] = 4 
+        else:
+            actions[agent] = 8 
+    
+    return actions
 
 
-visited = {starting_position}  # Posição inicial já visitada
+visited = {starting_position} 
 current_position = starting_position
 drone_state = DroneState(starting_position, prob_matrix, visited)
 
-step_limit = 200  # Limite de passos
 step = 0
 infos_list = []
 
-while step < step_limit:
-    # Obter sucessores e escolher o de maior probabilidade
+while env.agents:
     successors = drone_state.successors()
 
     if not successors:
-        # Se não houver sucessores com probabilidade > 0, permitimos zeros
         successors = drone_state.successors(allow_zeros=True)
 
     if not successors:
-        # Se mesmo assim não houver sucessores, termina a exploração
         break
 
-    # Ordenar sucessores pela heurística de maior probabilidade
+
     successors.sort(key=lambda s: s.h())
 
-    # Escolher o sucessor com a maior probabilidade
     next_state = successors[0]
     next_position = next_state.position
 
-    # Realizar a ação no ambiente DSSE
-    action = AStar_single_agent(current_position, next_position)
-    actions = {'drone0': action}
+    actions = AStar_single_agent(current_position, next_position, env.agents)
     observations, rewards, terminations, truncations, infos = env.step(actions)
 
-    # Zera a probabilidade da célula atual para evitar revisitá-la
     x, y = current_position
     prob_matrix[x, y] = 0
 
-    print(f"{step} - Movendo para {next_position}, Ação: {action}, Probabilidade: {1 - next_state.h()}")
-
-    # Atualizar posição e estado do drone
     current_position = next_position
     drone_state = next_state
     step += 1
@@ -149,9 +142,5 @@ while step < step_limit:
     info['step'] = step
     infos_list.append(info)
 
-# Fechar o ambiente DSSE após a execução
-env.close()
-
-# Salvar os resultados em um arquivo CSV
 df = pd.DataFrame(infos_list)
 df.to_csv('results/AStar_search_1_agent_2c.csv', index=False)
