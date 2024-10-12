@@ -1,18 +1,8 @@
 from DSSE import CoverageDroneSwarmSearch
 import pandas as pd
 
-env = CoverageDroneSwarmSearch(
-    drone_amount=4,
-    render_mode="human",
-    prob_matrix_path='data/config_02.npy',
-    timestep_limit=200
-)
 
-opt = {
-    "drones_positions": [(31, 31), (32, 31), (31, 32), (32, 32)],
-}
-
-def traditional_search_single_agent(obs, agents, opt, passos):
+def traditional_search_4_agent(obs, agents, opt, passos):
 
     actions = {}
     
@@ -72,25 +62,38 @@ def traditional_search_single_agent(obs, agents, opt, passos):
 
     return actions
 
-observations, info = env.reset(options=opt)
 
-step = 0
-infos_list = []
-passos = 13
+def main():
+    env = CoverageDroneSwarmSearch(
+        drone_amount=4,
+        render_mode="human",
+        prob_matrix_path='data/config_02.npy',
+        timestep_limit=200
+    )
 
-while env.agents:
-    if passos < 0:
-        passos = 12
-    
-    step += 1
-    actions = traditional_search_single_agent(observations, env.agents, opt, passos)
-    observations, rewards, terminations, truncations, infos = env.step(actions)
-    info = infos['drone0']
-    #print(observations['drone0'][0])
-    info['step'] = step
-    infos_list.append(info)
-    #print(info)
-    passos -= 1
+    opt = {
+        "drones_positions": [(31, 31), (32, 31), (31, 32), (32, 32)],
+    }
 
-df = pd.DataFrame(infos_list)
-df.to_csv('results/traditional_search_4_agent_2c.csv', index=False)
+    observations, info = env.reset(options=opt)
+
+    step = 0
+    infos_list = []
+    passos = 13
+
+    while env.agents:
+        if passos < 0:
+            passos = 12
+        
+        step += 1
+        actions = traditional_search_4_agent(observations, env.agents, opt, passos)
+        observations, rewards, terminations, truncations, infos = env.step(actions)
+        info = infos['drone0']
+        #print(observations['drone0'][0])
+        info['step'] = step
+        infos_list.append(info)
+        #print(info)
+        passos -= 1
+
+    df = pd.DataFrame(infos_list)
+    df.to_csv('results/traditional_search_4_agent_2c.csv', index=False)

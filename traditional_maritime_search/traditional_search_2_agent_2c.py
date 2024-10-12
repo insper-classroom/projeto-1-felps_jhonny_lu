@@ -1,18 +1,8 @@
 from DSSE import CoverageDroneSwarmSearch
 import pandas as pd
 
-env = CoverageDroneSwarmSearch(
-    drone_amount=2,
-    render_mode="human",
-    prob_matrix_path='data/config_02.npy',
-    timestep_limit=200
-)
 
-opt = {
-    "drones_positions": [(31, 21), (32, 21)],
-}
-
-def traditional_search_single_agent(obs, agents, opt):
+def traditional_search_2_agent(obs, agents, opt):
 
     actions = {}
     
@@ -46,20 +36,33 @@ def traditional_search_single_agent(obs, agents, opt):
 
     return actions
 
-observations, info = env.reset(options=opt)
 
-step = 0
-infos_list = []
+def main():
+    env = CoverageDroneSwarmSearch(
+        drone_amount=2,
+        render_mode="human",
+        prob_matrix_path='data/config_02.npy',
+        timestep_limit=200
+    )
 
-while env.agents:
-    step += 1
-    actions = traditional_search_single_agent(observations, env.agents, opt)
-    observations, rewards, terminations, truncations, infos = env.step(actions)
-    info = infos['drone0']
-    #print(observations['drone0'][0])
-    info['step'] = step
-    infos_list.append(info)
-    #print(info)
+    opt = {
+        "drones_positions": [(31, 21), (32, 21)],
+    }
 
-df = pd.DataFrame(infos_list)
-df.to_csv('results/traditional_search_2_agent_2c.csv', index=False)
+    observations, info = env.reset(options=opt)
+
+    step = 0
+    infos_list = []
+
+    while env.agents:
+        step += 1
+        actions = traditional_search_2_agent(observations, env.agents, opt)
+        observations, rewards, terminations, truncations, infos = env.step(actions)
+        info = infos['drone0']
+        #print(observations['drone0'][0])
+        info['step'] = step
+        infos_list.append(info)
+        #print(info)
+
+    df = pd.DataFrame(infos_list)
+    df.to_csv('results/traditional_search_2_agent_2c.csv', index=False)

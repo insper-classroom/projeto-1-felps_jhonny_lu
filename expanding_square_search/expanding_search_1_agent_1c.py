@@ -1,16 +1,6 @@
 from DSSE import CoverageDroneSwarmSearch
 import pandas as pd
 
-env = CoverageDroneSwarmSearch(
-    drone_amount=1,
-    render_mode="human",
-    prob_matrix_path='data/config_01.npy',
-    timestep_limit=200
-)
-
-opt = {
-    "drones_positions": [(23, 23)],
-}
 
 def expanding_search_single_agent(direcao, agents):
 
@@ -29,40 +19,53 @@ def expanding_search_single_agent(direcao, agents):
 
     return actions
 
-observations, info = env.reset(options=opt)
 
-step = 0
-infos_list = []
-direcoes = ["cima", "direita", "baixo", "esquerda"]
-passos_inciais = 1
-passos = 1
-contador = 1
-indice_dir = 0
+def main():
+    env = CoverageDroneSwarmSearch(
+        drone_amount=1,
+        render_mode="human",
+        prob_matrix_path='data/config_01.npy',
+        timestep_limit=200
+    )
 
-while env.agents:
-    if passos <= 0:
-        passos = passos_inciais
+    opt = {
+        "drones_positions": [(23, 23)],
+    }
+    
+    observations, info = env.reset(options=opt)
 
-        if contador <= 0:
-            contador = 1
-            passos_inciais += 1
-        else:
-            contador -= 1
+    step = 0
+    infos_list = []
+    direcoes = ["cima", "direita", "baixo", "esquerda"]
+    passos_inciais = 1
+    passos = 1
+    contador = 1
+    indice_dir = 0
 
-        if indice_dir >= 3:
-            indice_dir = 0
-        else:
-            indice_dir += 1
+    while env.agents:
+        if passos <= 0:
+            passos = passos_inciais
 
-    step += 1
-    actions = expanding_search_single_agent(direcoes[indice_dir], env.agents)
-    observations, rewards, terminations, truncations, infos = env.step(actions)
-    info = infos['drone0']
-    #print(observations['drone0'][0])
-    info['step'] = step
-    infos_list.append(info)
-    #print(info)
-    passos -= 1
+            if contador <= 0:
+                contador = 1
+                passos_inciais += 1
+            else:
+                contador -= 1
 
-df = pd.DataFrame(infos_list)
-df.to_csv('results/expanding_search_1_agent_1c.csv', index=False)
+            if indice_dir >= 3:
+                indice_dir = 0
+            else:
+                indice_dir += 1
+
+        step += 1
+        actions = expanding_search_single_agent(direcoes[indice_dir], env.agents)
+        observations, rewards, terminations, truncations, infos = env.step(actions)
+        info = infos['drone0']
+        #print(observations['drone0'][0])
+        info['step'] = step
+        infos_list.append(info)
+        #print(info)
+        passos -= 1
+
+    df = pd.DataFrame(infos_list)
+    df.to_csv('results/expanding_search_1_agent_1c.csv', index=False)
